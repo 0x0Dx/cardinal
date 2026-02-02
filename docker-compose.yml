@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cardinal-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cardinal
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: cardinal
+    volumes:
+      - cardinal-db-data:/var/lib/postgresql/data
+    networks:
+      - cardinal-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardinal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: cardinal-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://cardinal:${POSTGRES_PASSWORD:-changeme}@postgres:5432/cardinal
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - cardinal-app-storage:/storage
+    networks:
+      - cardinal-net
+
+volumes:
+  cardinal-db-data:
+  cardinal-app-storage:
+
+networks:
+  cardinal-net:
+    driver: bridge
