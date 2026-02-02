@@ -16,7 +16,7 @@
 
 3. Start Cardinal:
 ```bash
-  docker-compose up -d
+  docker-compose up -d --build
 ```
 
 4. Access at: `http://localhost:8000`
