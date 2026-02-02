@@ -12,5 +12,8 @@ dependencies = [
   "uvicorn>=0.40.0",
 ]
 
+[tool]
+uv.package = true
+
 [project.scripts]
 cardinal = "cardinal.main:main"
